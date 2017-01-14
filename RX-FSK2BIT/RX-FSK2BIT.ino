@@ -9,7 +9,7 @@
 
 int input,max,prev,currentTime,prevTime,period,cout = 0,totalTime = 0;
 float currentFrequency,prevFrequency;
-boolean check,cp = false;
+boolean check = false,cp = false;
 
 void setup(void) 
 {
@@ -41,33 +41,32 @@ void loop(void)
       currentFrequency = 1000000/period;
 
 
-         if(1125 < currentFrequency && currentFrequency < 1375){   
+         if(1125 < currentFrequency && currentFrequency <= 1375){   
 
                 Serial.print("1 1 ");
                 cout++;
 
                 delayMicroseconds(2800);
          } 
-         else if(875 < currentFrequency && currentFrequency < 1125){
+         else if(875 < currentFrequency && currentFrequency <= 1125){
       
                 Serial.print("1 0 ");
                 cout++;
 
                 delayMicroseconds(2500);
          }
-         else if(625 < currentFrequency && currentFrequency < 875){
+         else if(625 < currentFrequency && currentFrequency <= 875){
 
                 Serial.print("0 1 ");
                 cout++;
              
               delayMicroseconds(1990);
          }       
-         else if(375 < currentFrequency && currentFrequency < 625){
-              if(cp){
+         else if(375 < currentFrequency && currentFrequency <= 625){
                 Serial.print("0 0 ");
                 cout++;
-              }
-               cp = !cp;     
+                
+              delayMicroseconds(2850);     
          }
    
       if(cout == 5){
@@ -78,11 +77,12 @@ void loop(void)
       prevTime = currentTime;
       //Serial.println(currentFrequency);
       check = false;
+      max = 0;
     }
     if(input>max){
     max=input;
     }
-    if(max-input > 30 && check==false){
+    if(max-input > 20 && check==false){
     check = true;
     }
   
