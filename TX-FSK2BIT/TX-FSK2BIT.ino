@@ -39,35 +39,36 @@ void loop(void) {
         Serial.println();
         Serial.parseInt();
 
+        for(int i=0 ; i<1000 ; i++)
         for(int k=0 ; k<10 ; k+=2){
           
           if(input[k] == 0){                
             if(input[k+1] == 0){                 // for input 00 - 500 Hz
-              for(int j=0 ; j<2 ; j++)
+              for(int j=0 ; j<3 ; j++)
                 for(int i=0 ; i<4 ; i++){
                   dac.setVoltage(sine[i], false);
-                  delayMicroseconds(350); 
+                  delayMicroseconds(350); //480
                 }
             }
               
              else if(input[k+1] == 1){           // for input 01 - 750 Hz
-              for(int j=0 ; j<3 ; j++)
+              for(int j=0 ; j<4 ; j++)
                 for(int i=0 ; i<4 ; i++){
                   dac.setVoltage(sine[i], false);
-                  delayMicroseconds(190); 
+                  delayMicroseconds(185); 
                 }                
              }
           }
           else if(input[k] == 1){               // for input 10 - 1000 Hz
             if(input[k+1] == 0){
-              for(int j=0 ; j<4 ; j++)
+              for(int j=0 ; j<5 ; j++)
                 for(int i=0 ; i<4 ; i++){
                   dac.setVoltage(sine[i], false);
                   delayMicroseconds(100); 
                 }
             }
             else if(input[k+1] == 1){            // for input 11 - 1250 Hz
-              for(int j=0 ; j<5 ; j++)      
+              for(int j=0 ; j<6 ; j++)      
                 for(int i=0 ; i<4 ; i++){
                   dac.setVoltage(sine[i], false);
                   delayMicroseconds(50); 
@@ -76,6 +77,11 @@ void loop(void) {
         } 
       } 
       }
-      dac.setVoltage(0, false);                 // for don't send
+      /*
+      for(int i=0 ; i<4 ; i++){
+          dac.setVoltage(sine[i], false);
+          delayMicroseconds(20); 
+      } 
+      */
 }
 
