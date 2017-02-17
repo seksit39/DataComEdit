@@ -13,7 +13,7 @@ none       1736 Hz
 
   Adafruit_MCP4725 dac;
   uint16_t a = 0;
-  uint16_t input[10] = {0,0,0,0,0,0,0,0,0,0};
+  uint16_t input[4] = {0,0,0,0};
   const uint16_t sine[4]  = {2048,4095,2048,0};   // At 1700 Hz     
   int del = 0;
   int c00 = 0;
@@ -24,59 +24,59 @@ none       1736 Hz
 void setup(void) {
   
   Serial.begin(115200);                         // set buadrate serial
-  dac.begin(0x62);                              // set to default 
+  dac.begin(0x62);                              // set DAC default 
   
 }
 
 void loop(void) {
 
       if(Serial.available() > 0){               // for get input
-        for(int i=0 ; i<10 ; i++){
-          input[i] = Serial.parseInt();         // save input to array 
-          Serial.print(input[i]);  
-          Serial.print(" ");
-        }
-        Serial.println();
-        Serial.parseInt();
 
+        int in = Serial.parseInt();             // get Dec from Serial
+        for(int i=0 ; i<4 ; i++){               // 4 time of loop for a byte input
+          input[i] = in & 3;                    // and bit b0000 0011 and save to array
+          in >>= 2;                             // shift bit right 2 bit
+        }
+        
         //for(int i=0 ; i<10 ; i++)
-        for(int k=0 ; k<10 ; k+=2){
+        for(int k=3 ; k>=0 ; k--){
           
-          if(input[k] == 0){                
-            if(input[k+1] == 0){                 // for input 00 - 500 Hz
-              for(int j=0 ; j<2 ; j++)
-                for(int i=0 ; i<4 ; i++){
-                  dac.setVoltage(sine[i], false);
-                  delayMicroseconds(360); 
-                }
-            }
-              
-             else if(input[k+1] == 1){           // for input 01 - 750 Hz
-              for(int j=0 ; j<3 ; j++)
-                for(int i=0 ; i<4 ; i++){
-                  dac.setVoltage(sine[i], false);
-                  delayMicroseconds(190); 
-                }                
+            if(input[k] == 0){                    // for input 00 - 500 Hz
+                //Serial.println("out 00");
+                for(int j=0 ; j<2 ; j++)
+                  for(int i=0 ; i<4 ; i++){
+                    dac.setVoltage(sine[i], false);
+                    delayMicroseconds(360); 
+                  }
              }
-          }
-          else if(input[k] == 1){               // for input 10 - 1000 Hz
-            if(input[k+1] == 0){
-              for(int j=0 ; j<4 ; j++)
-                for(int i=0 ; i<4 ; i++){
-                  dac.setVoltage(sine[i], false);
-                  delayMicroseconds(100); 
-                }
-            }
-            else if(input[k+1] == 1){            // for input 11 - 1250 Hz
-              for(int j=0 ; j<5 ; j++)      
-                for(int i=0 ; i<4 ; i++){
-                  dac.setVoltage(sine[i], false);
-                  delayMicroseconds(50); 
-                }             
-            }
+              
+             else if(input[k] == 1){           // for input 01 - 750 Hz
+                //Serial.println("out 01");
+                for(int j=0 ; j<3 ; j++)
+                  for(int i=0 ; i<4 ; i++){
+                    dac.setVoltage(sine[i], false);
+                    delayMicroseconds(190); 
+                   }                
+             }
+ 
+              else if(input[k] == 2){               // for input 10 - 1000 Hz
+                 //Serial.println("out 10");
+                 for(int j=0 ; j<4 ; j++)
+                    for(int i=0 ; i<4 ; i++){
+                      dac.setVoltage(sine[i], false);
+                      delayMicroseconds(100); 
+                    }
+              }
+              
+              else if(input[k] == 3){            // for input 11 - 1250 Hz
+                 //Serial.println("out 11");
+                 for(int j=0 ; j<5 ; j++)      
+                    for(int i=0 ; i<4 ; i++){
+                      dac.setVoltage(sine[i], false);
+                      delayMicroseconds(50); 
+                    }             
+              }
         } 
       } 
-      }
       dac.setVoltage(0, false);                 // for don't send
 }
-
