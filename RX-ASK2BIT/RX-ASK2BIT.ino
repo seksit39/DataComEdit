@@ -6,39 +6,39 @@
   int count = 0;
   
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(115200);                   // set serial baudrate
 }
 
 void loop() {
 
-  int tmp = analogRead(A0);
+  int tmp = analogRead(A0);               // read signal from analog pin
   
   //Serial.println(tmp);
   
-  if(tmp-prev>10 && check==false){ 
+  if(tmp-prev>10 && check==false){        // check for rising signal
     max = 0;
-    check = true;
+    check = true;                         // change check status is true
   }
   
-  if(tmp>max){
+  if(tmp>max){                            // for change max value
     max=tmp;
   }
   
-  if(max-tmp > 10){
+  if(max-tmp > 10){                       // check for falling signal
     if(check == true){
-      if(128<max && max<384){
-        Serial.print("0 0 ");
+      if(128<max && max<384){             // if max between 128 and 384
+        Serial.print("0 0 ");             
         count++;
       }        
-      else if(384<max && max<640){
+      else if(384<max && max<640){        // if max between 384 and 640
         Serial.print("0 1 ");
         count++;
       }
-      else if(640<max && max<896){
+      else if(640<max && max<896){        // if max between 640 and 896
         Serial.print("1 0 ");
         count++;
       }
-      else if(896<max && max<1024){
+      else if(896<max && max<1024){       // if max between 896 and 1024
         Serial.print("1 1 ");
         count++;
       }
@@ -47,10 +47,8 @@ void loop() {
         count = 0;
       }
     }
-    check = false;
+    check = false;                        // change check status is false
   }
 
-
-
-prev = tmp;
+prev = tmp;                               // assign temp value to previous
 }
