@@ -11,31 +11,45 @@ none       1736 Hz
 #include <Adafruit_MCP4725.h>
 #include <Adafruit_ADS1015.h>
 
-  Adafruit_MCP4725 dac;
+  #define defaultFreq 1700
+  #define freq0 500                               // define frequency for data 0 0
+  #define freq1 750                               // define frequency for data 0 1
+  #define freq2 1000                              // define frequency for data 1 0
+  #define freq3 1250                              // define frequency for data 1 1
+
+  
   uint16_t a = 0;
-  uint16_t input[4] = {0,0,0,0};
+  uint16_t input[4] = {0,0,0,0};                  // for hold input
   const uint16_t sine[4]  = {2048,4095,2048,0};   // At 1700 Hz     
   int del = 0;
-  int c00 = 0;
-  int c01 = 0;
-  int c10 = 0;
-  int c11 = 0;
-
+  int c00 = 0;                                    // for count data 0 0 
+  int c01 = 0;                                    // for count data 0 1 
+  int c10 = 0;                                    // for count data 1 0 
+  int c11 = 0;                                    // for count data 1 1 
+  int delay0,delay1,delay2,delay3;                // for increase period
+  
+  Adafruit_MCP4725 dac;                           // create dac object
+  
 void setup(void) {
   
-  Serial.begin(115200);                         // set buadrate serial
-  dac.begin(0x62);                              // set DAC default 
+  Serial.begin(115200);                           // set buadrate serial
+  dac.begin(0x62);                                // set DAC default 
+
+  delay0 = (1000000/freq0 - 1000000/defaultFreq)/4;   // caculate period/4 of sinewave
+  delay1 = (1000000/freq1 - 1000000/defaultFreq)/4;
+  delay2 = (1000000/freq2 - 1000000/defaultFreq)/4;
+  delay3 = (1000000/freq3 - 1000000/defaultFreq)/4;
   
 }
 
 void loop(void) {
 
-      if(Serial.available() > 0){               // for get input
+      if(Serial.available() > 0){                 // for get input
 
-        int in = Serial.parseInt();             // get Dec from Serial
-        for(int i=0 ; i<4 ; i++){               // 4 time of loop for a byte input
-          input[i] = in & 3;                    // and bit b0000 0011 and save to array
-          in >>= 2;                             // shift bit right 2 bit
+        int in = Serial.parseInt();               // get Dec from Serial
+        for(int i=0 ; i<4 ; i++){                 // 4 time of loop for a byte input
+          input[i] = in & 3;                      // and bit b0000 0011 and save to array
+          in >>= 2;                               // shift bit right 2 bit
         }
         
         //for(int i=0 ; i<10 ; i++)
@@ -46,37 +60,37 @@ void loop(void) {
                 for(int j=0 ; j<2 ; j++)
                   for(int i=0 ; i<4 ; i++){
                     dac.setVoltage(sine[i], false);
-                    delayMicroseconds(360); 
+                    delayMicroseconds(delay0);    //360
                   }
              }
               
-             else if(input[k] == 1){           // for input 01 - 750 Hz
+             else if(input[k] == 1){              // for input 01 - 750 Hz
                 //Serial.println("out 01");
                 for(int j=0 ; j<3 ; j++)
                   for(int i=0 ; i<4 ; i++){
                     dac.setVoltage(sine[i], false);
-                    delayMicroseconds(190); 
+                    delayMicroseconds(delay1);    //190
                    }                
              }
  
-              else if(input[k] == 2){               // for input 10 - 1000 Hz
+              else if(input[k] == 2){             // for input 10 - 1000 Hz
                  //Serial.println("out 10");
                  for(int j=0 ; j<4 ; j++)
                     for(int i=0 ; i<4 ; i++){
                       dac.setVoltage(sine[i], false);
-                      delayMicroseconds(100); 
+                      delayMicroseconds(delay2);  //100 
                     }
               }
               
-              else if(input[k] == 3){            // for input 11 - 1250 Hz
+              else if(input[k] == 3){             // for input 11 - 1250 Hz
                  //Serial.println("out 11");
                  for(int j=0 ; j<5 ; j++)      
                     for(int i=0 ; i<4 ; i++){
                       dac.setVoltage(sine[i], false);
-                      delayMicroseconds(50); 
+                      delayMicroseconds(delay3); //50
                     }             
               }
         } 
       } 
-      dac.setVoltage(0, false);                 // for don't send
+      dac.setVoltage(0, false);                   // for don't send
 }
